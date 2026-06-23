@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { fetchCombinedResults } from "../api.js";
 import CompanyDetail from "../components/CompanyDetail.jsx";
@@ -103,13 +103,18 @@ export default function Results() {
   const [sortBy, setSortBy] = useState(SORT_MOST_COURSES);
   const [websiteFilter, setWebsiteFilter] = useState(FILTER_ALL);
   const [searchQuery, setSearchQuery] = useState("");
+  const hasLoadedRef = useRef(false);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async ({ resetView = false } = {}) => {
+    const showBlockingLoader = !hasLoadedRef.current;
+    if (showBlockingLoader) {
+      setLoading(true);
+    }
     setError("");
     try {
       const data = await fetchCombinedResults();
-      setCompanies(data.companies || []);
+      const nextCompanies = data.companies || [];
+      setCompanies(nextCompanies);
       setMeta({
         total: data.total,
         withCourses: data.withCourses,
@@ -118,39 +123,38 @@ export default function Results() {
         providersWithWebsite: data.providersWithWebsite,
         distinctCourseSites: data.distinctCourseSites,
       });
-      setSelected(null);
-      setPage(1);
+      if (resetView) {
+        setSelected(null);
+        setPage(1);
+      } else {
+        setSelected((current) => {
+          if (!current) return null;
+          return nextCompanies.find((c) => c.id === current.id) ?? current;
+        });
+      }
     } catch (err) {
       setError(err.message || "Failed to load results");
-      setCompanies([]);
+      if (!hasLoadedRef.current) {
+        setCompanies([]);
+      }
     } finally {
+      hasLoadedRef.current = true;
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
     document.title = "HRDC Training Provider";
-    load();
-  }, [load, location.key]);
-
-  useEffect(() => {
     if (location.state?.fromCourseScraper) {
       setScrapeNotice({
         coursesFound: location.state.coursesFound ?? 0,
         savedToCsv: location.state.savedToCsv ?? 0,
       });
     }
-  }, [location.state]);
-
-  useEffect(() => {
-    function onVisible() {
-      if (document.visibilityState === "visible") {
-        load();
-      }
-    }
-    document.addEventListener("visibilitychange", onVisible);
-    return () => document.removeEventListener("visibilitychange", onVisible);
-  }, [load]);
+    load({ resetView: true });
+    // Load once on mount only — avoid refetch loops from location updates.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const filteredCompanies = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -217,7 +221,7 @@ export default function Results() {
             <button
               type="button"
               className="icon-button refresh-button"
-              onClick={load}
+              onClick={() => load({ resetView: false })}
               disabled={loading}
               aria-label="Refresh"
               title="Refresh"
