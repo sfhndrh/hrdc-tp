@@ -155,8 +155,12 @@ Set these under **Environment** (do not commit real keys):
 | `ALIBABA_API_KEY` | your DashScope API key |
 | `ALIBABA_BASE_URL` | `https://dashscope-intl.aliyuncs.com` |
 | `ALIBABA_MODEL` | `qwen-plus` |
-| `ENABLE_COURSE_SCRAPER` | `false` on Render (optional; disables course scrape API) |
-| `VITE_ENABLE_COURSE_SCRAPER` | `false` on Render (hides Course Scraper in the UI; set before build) |
+| `ENABLE_PROVIDER_DISCOVERY` | `false` on Render (disables provider lookup API) |
+| `ENABLE_COURSE_SCRAPER` | `false` on Render (disables course scrape API) |
+| `VITE_ENABLE_PROVIDER_DISCOVERY` | `false` on Render (hides Provider Discovery; set before build) |
+| `VITE_ENABLE_COURSE_SCRAPER` | `false` on Render (hides Course Scraper; set before build) |
+
+When both `VITE_ENABLE_*` flags are `false`, the settings (gear) icon is hidden entirely.
 
 On first startup, if `training-provider-updated.csv` and `courses-output.csv` are missing, the server **seeds them from `combined-providers-courses.csv`** (committed in git) so the Results page shows existing websites and courses.
 

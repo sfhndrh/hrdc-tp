@@ -21,13 +21,17 @@ function SettingsIcon() {
   );
 }
 
+const providerDiscoveryEnabled =
+  import.meta.env.VITE_ENABLE_PROVIDER_DISCOVERY !== "false";
+const courseScraperEnabled = import.meta.env.VITE_ENABLE_COURSE_SCRAPER !== "false";
+const showSettings = providerDiscoveryEnabled || courseScraperEnabled;
+
 export default function PageHeader({ title }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
-  const courseScraperEnabled = import.meta.env.VITE_ENABLE_COURSE_SCRAPER !== "false";
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || !showSettings) return;
 
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -52,40 +56,44 @@ export default function PageHeader({ title }) {
   return (
     <header className="page-header">
       {title ? <h1 className="page-header-title">{title}</h1> : null}
-      <div className="nav-settings" ref={menuRef}>
-        <button
-          type="button"
-          className="settings-button"
-          onClick={() => setOpen((prev) => !prev)}
-          aria-expanded={open}
-          aria-haspopup="menu"
-          aria-label="Settings"
-        >
-          <SettingsIcon />
-        </button>
-        {open && (
-          <div className="settings-dropdown" role="menu">
-            <NavLink
-              to="/provider-discovery"
-              className="settings-dropdown-item"
-              role="menuitem"
-              onClick={() => setOpen(false)}
-            >
-              Provider Discovery
-            </NavLink>
-            {courseScraperEnabled ? (
-              <NavLink
-                to="/course-scraper"
-                className="settings-dropdown-item"
-                role="menuitem"
-                onClick={() => setOpen(false)}
-              >
-                Course Scraper
-              </NavLink>
-            ) : null}
-          </div>
-        )}
-      </div>
+      {showSettings ? (
+        <div className="nav-settings" ref={menuRef}>
+          <button
+            type="button"
+            className="settings-button"
+            onClick={() => setOpen((prev) => !prev)}
+            aria-expanded={open}
+            aria-haspopup="menu"
+            aria-label="Settings"
+          >
+            <SettingsIcon />
+          </button>
+          {open && (
+            <div className="settings-dropdown" role="menu">
+              {providerDiscoveryEnabled ? (
+                <NavLink
+                  to="/provider-discovery"
+                  className="settings-dropdown-item"
+                  role="menuitem"
+                  onClick={() => setOpen(false)}
+                >
+                  Provider Discovery
+                </NavLink>
+              ) : null}
+              {courseScraperEnabled ? (
+                <NavLink
+                  to="/course-scraper"
+                  className="settings-dropdown-item"
+                  role="menuitem"
+                  onClick={() => setOpen(false)}
+                >
+                  Course Scraper
+                </NavLink>
+              ) : null}
+            </div>
+          )}
+        </div>
+      ) : null}
     </header>
   );
 }

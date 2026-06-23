@@ -131,3 +131,8 @@ export function isCourseScraperEnabled() {
   const value = (process.env.ENABLE_COURSE_SCRAPER ?? "true").trim().toLowerCase();
   return value !== "false" && value !== "0";
 }
+
+export function isProviderDiscoveryEnabled() {
+  const value = (process.env.ENABLE_PROVIDER_DISCOVERY ?? "true").trim().toLowerCase();
+  return value !== "false" && value !== "0";
+}

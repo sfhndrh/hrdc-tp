@@ -8,6 +8,7 @@ import {
 } from "../utils/csvReader.js";
 import { writeAllRows } from "../utils/csvWriter.js";
 import { fetchCompanyInfo } from "../services/qwenService.js";
+import { isProviderDiscoveryEnabled } from "../utils/bootstrapFromCombined.js";
 
 const router = express.Router();
 const BATCH_SIZE = 500;
@@ -18,6 +19,13 @@ const BATCH_SIZE = 500;
  * Optional body: { providerName: string } — process single matching row only.
  */
 router.post("/run", async (req, res) => {
+  if (!isProviderDiscoveryEnabled()) {
+    return res.status(503).json({
+      ok: false,
+      error: "Provider Discovery is disabled on this deployment.",
+    });
+  }
+
   const failures = [];
   const processed = [];
   let successCount = 0;

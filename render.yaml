@@ -10,7 +10,11 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: ENABLE_PROVIDER_DISCOVERY
+        value: "false"
       - key: ENABLE_COURSE_SCRAPER
+        value: "false"
+      - key: VITE_ENABLE_PROVIDER_DISCOVERY
         value: "false"
       - key: VITE_ENABLE_COURSE_SCRAPER
         value: "false"
