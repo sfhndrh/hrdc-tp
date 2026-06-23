@@ -16,8 +16,14 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const FRONTEND_DIST = path.join(__dirname, "..", "frontend", "dist");
 
-app.use(cors({ origin: ["http://localhost:5173", "http://127.0.0.1:5173"] }));
+const corsOrigins = ["http://localhost:5173", "http://127.0.0.1:5173"];
+if (process.env.FRONTEND_URL) {
+  corsOrigins.push(process.env.FRONTEND_URL.replace(/\/$/, ""));
+}
+
+app.use(cors({ origin: corsOrigins }));
 app.use(express.json());
 
 app.get("/api/health", (_req, res) => {
@@ -31,6 +37,19 @@ app.get("/api/health", (_req, res) => {
 app.use("/api", scraperRoutes);
 app.use("/api", courseScraperRoutes);
 app.use("/api", resultsRoutes);
+
+// Production: serve built React app from the same origin (Render Web Service).
+if (fs.existsSync(path.join(FRONTEND_DIST, "index.html"))) {
+  app.use(express.static(FRONTEND_DIST));
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api")) {
+      return next();
+    }
+    res.sendFile(path.join(FRONTEND_DIST, "index.html"), (err) => {
+      if (err) next(err);
+    });
+  });
+}
 
 // Course scraper can run several minutes (crawl + Qwen batches)
 const server = app.listen(PORT, async () => {

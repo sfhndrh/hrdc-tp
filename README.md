@@ -134,6 +134,38 @@ Open http://localhost:5173
 
 ---
 
+## Deploy on Render (Web Service)
+
+One **Web Service** serves both the React UI and the API from the same URL.
+
+### Render settings
+
+| Field | Value |
+|-------|--------|
+| **Root Directory** | `backend` |
+| **Build Command** | `npm install && npm run build` |
+| **Start Command** | `npm start` |
+
+### Environment variables (Render dashboard)
+
+Set these under **Environment** (do not commit real keys):
+
+| Key | Example |
+|-----|---------|
+| `ALIBABA_API_KEY` | your DashScope API key |
+| `ALIBABA_BASE_URL` | `https://dashscope-intl.aliyuncs.com` |
+| `ALIBABA_MODEL` | `qwen-plus` |
+
+Render sets `PORT` automatically. The build step installs frontend deps and runs `vite build`; the backend then serves `frontend/dist` at `/`.
+
+After deploy, open your service URL (e.g. `https://hrdc-tp.onrender.com`) — the HRDC Training Provider UI should load. API health check: `/api/health`.
+
+**Note:** CSV files on Render use ephemeral disk unless you attach a [Persistent Disk](https://render.com/docs/disks) mounted at `backend/data`.
+
+Alternatively, import `render.yaml` from the repo root as a [Blueprint](https://render.com/docs/infrastructure-as-code).
+
+---
+
 ## Optional crawl settings
 
 Add to `backend/.env` to tune the Course Scraper:
