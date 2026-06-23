@@ -49,6 +49,11 @@ if (fs.existsSync(path.join(FRONTEND_DIST, "index.html"))) {
       if (err) next(err);
     });
   });
+} else {
+  console.warn(
+    `[startup] UI not available: ${path.join(FRONTEND_DIST, "index.html")} missing. ` +
+      "Set Render Build Command to: npm install && npm run build"
+  );
 }
 
 // Course scraper can run several minutes (crawl + Qwen batches)
