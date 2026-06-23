@@ -10,6 +10,10 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: ENABLE_COURSE_SCRAPER
+        value: "false"
+      - key: VITE_ENABLE_COURSE_SCRAPER
+        value: "false"
       - key: ALIBABA_API_KEY
         sync: false
       - key: ALIBABA_BASE_URL

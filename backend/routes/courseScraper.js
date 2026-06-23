@@ -4,6 +4,7 @@ import { isApiKeyConfigured } from "../services/qwenService.js";
 import { parseCourseUrls } from "../utils/parseUrls.js";
 import { writeCombinedCsvFromFiles } from "../utils/combinedCsvWriter.js";
 import { readAllCourses } from "../utils/courseCsvWriter.js";
+import { isCourseScraperEnabled } from "../utils/bootstrapFromCombined.js";
 
 const router = express.Router();
 
@@ -13,6 +14,13 @@ const router = express.Router();
  * Body: { url } | { urls: [] } | { urlsText: "one per line" }
  */
 router.post("/course-scraper", async (req, res) => {
+  if (!isCourseScraperEnabled()) {
+    return res.status(503).json({
+      success: false,
+      error: "Course Scraper is disabled on this deployment.",
+    });
+  }
+
   const { urls, error: parseError } = parseCourseUrls(req.body);
 
   if (parseError) {

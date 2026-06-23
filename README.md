@@ -155,6 +155,10 @@ Set these under **Environment** (do not commit real keys):
 | `ALIBABA_API_KEY` | your DashScope API key |
 | `ALIBABA_BASE_URL` | `https://dashscope-intl.aliyuncs.com` |
 | `ALIBABA_MODEL` | `qwen-plus` |
+| `ENABLE_COURSE_SCRAPER` | `false` on Render (optional; disables course scrape API) |
+| `VITE_ENABLE_COURSE_SCRAPER` | `false` on Render (hides Course Scraper in the UI; set before build) |
+
+On first startup, if `training-provider-updated.csv` and `courses-output.csv` are missing, the server **seeds them from `combined-providers-courses.csv`** (committed in git) so the Results page shows existing websites and courses.
 
 Render sets `PORT` automatically. The build step installs frontend deps and runs `vite build`; the backend then serves `frontend/dist` at `/`.
 

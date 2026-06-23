@@ -24,6 +24,7 @@ function SettingsIcon() {
 export default function PageHeader({ title }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
+  const courseScraperEnabled = import.meta.env.VITE_ENABLE_COURSE_SCRAPER !== "false";
 
   useEffect(() => {
     if (!open) return;
@@ -72,14 +73,16 @@ export default function PageHeader({ title }) {
             >
               Provider Discovery
             </NavLink>
-            <NavLink
-              to="/course-scraper"
-              className="settings-dropdown-item"
-              role="menuitem"
-              onClick={() => setOpen(false)}
-            >
-              Course Scraper
-            </NavLink>
+            {courseScraperEnabled ? (
+              <NavLink
+                to="/course-scraper"
+                className="settings-dropdown-item"
+                role="menuitem"
+                onClick={() => setOpen(false)}
+              >
+                Course Scraper
+              </NavLink>
+            ) : null}
           </div>
         )}
       </div>

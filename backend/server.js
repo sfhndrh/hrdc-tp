@@ -10,6 +10,7 @@ import resultsRoutes from "./routes/results.js";
 import { isApiKeyConfigured } from "./services/qwenService.js";
 import { writeCombinedCsvFromFiles } from "./utils/combinedCsvWriter.js";
 import { COURSES_CSV } from "./utils/courseCsvWriter.js";
+import { bootstrapFromCombinedIfNeeded } from "./utils/bootstrapFromCombined.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, ".env") });
@@ -66,6 +67,19 @@ const server = app.listen(PORT, async () => {
   console.log(
     `API key: ${isApiKeyConfigured() ? "loaded" : "MISSING — check backend/.env"}`
   );
+
+  try {
+    const boot = await bootstrapFromCombinedIfNeeded();
+    if (boot.ran) {
+      console.log(
+        `[bootstrap] Seeded from combined-providers-courses.csv — ` +
+          `providers: ${boot.providersWritten ?? "unchanged"}, ` +
+          `courses: ${boot.coursesTotal ?? "unchanged"}`
+      );
+    }
+  } catch (err) {
+    console.error("[bootstrap] Failed:", err.message);
+  }
 
   if (fs.existsSync(COURSES_CSV)) {
     try {
