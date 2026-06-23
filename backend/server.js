@@ -19,8 +19,11 @@ const PORT = process.env.PORT || 3000;
 const FRONTEND_DIST = path.join(__dirname, "..", "frontend", "dist");
 
 const corsOrigins = ["http://localhost:5173", "http://127.0.0.1:5173"];
-if (process.env.FRONTEND_URL) {
-  corsOrigins.push(process.env.FRONTEND_URL.replace(/\/$/, ""));
+for (const envKey of ["FRONTEND_URL", "RENDER_EXTERNAL_URL"]) {
+  const url = process.env[envKey]?.replace(/\/$/, "");
+  if (url && !corsOrigins.includes(url)) {
+    corsOrigins.push(url);
+  }
 }
 
 app.use(cors({ origin: corsOrigins }));
