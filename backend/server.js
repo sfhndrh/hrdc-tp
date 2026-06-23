@@ -45,7 +45,8 @@ app.use("/api", resultsRoutes);
 if (fs.existsSync(path.join(FRONTEND_DIST, "index.html"))) {
   app.use(express.static(FRONTEND_DIST));
   app.get("*", (req, res, next) => {
-    if (req.path.startsWith("/api")) {
+    const normalizedPath = req.path.replace(/\/+/g, "/");
+    if (normalizedPath.startsWith("/api")) {
       return next();
     }
     res.sendFile(path.join(FRONTEND_DIST, "index.html"), (err) => {

@@ -1,4 +1,9 @@
-const API_BASE = "https://hrdc-tp.onrender.com/";
+/** Same-origin in production (Render Web Service). Override with VITE_API_BASE if needed. */
+const API_BASE = (import.meta.env.VITE_API_BASE ?? "").replace(/\/$/, "");
+
+function apiUrl(path) {
+  return `${API_BASE}${path}`;
+}
 
 /**
  * Run scraper batch (next empty website rows, or single provider if name given).
@@ -10,7 +15,7 @@ export async function runScraper(options = {}) {
     body.providerName = options.providerName.trim();
   }
 
-  const response = await fetch(`${API_BASE}/api/run`, {
+  const response = await fetch(apiUrl("/api/run"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -29,7 +34,7 @@ export async function runScraper(options = {}) {
  * Fetch CSV progress without running lookups.
  */
 export async function fetchStatus() {
-  const response = await fetch(`${API_BASE}/api/status`);
+  const response = await fetch(apiUrl("/api/status"));
   const data = await response.json();
   if (!response.ok) {
     throw new Error(data.error || "Failed to load status");
@@ -51,7 +56,7 @@ export async function runCourseScraper(options = {}) {
     body.url = options.url.trim();
   }
 
-  const response = await fetch(`${API_BASE}/api/course-scraper`, {
+  const response = await fetch(apiUrl("/api/course-scraper"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -70,7 +75,7 @@ export async function runCourseScraper(options = {}) {
  * Combined results: providers with website + matching courses.
  */
 export async function fetchCombinedResults() {
-  const response = await fetch(`${API_BASE}/api/results`, {
+  const response = await fetch(apiUrl("/api/results"), {
     cache: "no-store",
     headers: { "Cache-Control": "no-cache" },
   });
