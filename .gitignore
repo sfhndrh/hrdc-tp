@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+backend/data/training-provider-updated.csv
+backend/data/courses-output.csv
+*.log
+.DS_Store
