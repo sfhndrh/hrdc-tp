@@ -1,7 +1,5 @@
-# HRDC Training Provider
+# HRDC Training Providers List
 
-
-**Scraper**
 
 
 
